@@ -1,0 +1,31 @@
+class FractalUI(tk.Tk):
+    def __init__(self, controller):
+        super().__init__()
+        self.controller = controller
+        self.title("FractalVision Pro (Python + UV)")
+        self.geometry("1050x650")
+        self._setup_widgets()
+        
+    def _setup_widgets(self):
+        self.canvas = tk.Canvas(self, bg="black", width=800, height=600)
+        self.canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        
+        control_panel = tk.Frame(self, padx=15, pady=15)
+        control_panel.pack(side=tk.RIGHT, fill=tk.Y)
+        
+        tk.Label(control_panel, text="Тип фракталу", font=('Arial', 10, 'bold')).pack()
+        self.type_var = tk.StringVar(value="Mandelbrot")
+        ttk.OptionMenu(control_panel, self.type_var, "Mandelbrot", "Mandelbrot", "Julia").pack(pady=5)
+        
+        tk.Label(control_panel, text="Деталізація (ітерації)").pack()
+        self.iter_slider = tk.Scale(control_panel, from_=50, to=1000, orient=tk.HORIZONTAL)
+        self.iter_slider.set(128)
+        self.iter_slider.pack(fill=tk.X)
+        
+        tk.Button(control_panel, text="Рендеринг", bg="#4CAF50", fg="white", 
+                  command=self.controller.render).pack(pady=20, fill=tk.X)
+        
+        tk.Label(control_panel, text="ЛКМ: Збільшити\nПКМ: Зменшити", fg="gray").pack(side=tk.BOTTOM)
+
+        self.canvas.bind("<Button-1>", self.controller.zoom_in)
+        self.canvas.bind("<Button-3>", self.controller.zoom_out)
