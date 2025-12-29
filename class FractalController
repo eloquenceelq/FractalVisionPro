@@ -1,0 +1,47 @@
+class FractalController:
+    def __init__(self):
+        self.engine = FractalEngine()
+        self.x_bounds = [-2.1, 0.9]
+        self.y_bounds = [-1.2, 1.2]
+        self.ui = FractalUI(self)
+        self.render()
+        
+    def render(self):
+        w, h = 800, 600
+        max_i = self.ui.iter_slider.get()
+        if self.ui.type_var.get() == "Mandelbrot":
+            data = self.engine.generate_mandelbrot(w, h, self.x_bounds, self.y_bounds, max_i)
+        else:
+            data = self.engine.generate_julia(w, h, self.x_bounds, self.y_bounds, complex(-0.7, 0.27), max_i)
+        
+        # Кольоровий рендер через HSV
+        hsv_img = np.zeros((h, w, 3), dtype=np.uint8)
+        hsv_img[..., 0] = (data * 8).astype(np.uint8) # Колір
+        hsv_img[..., 1] = 200 # Насиченість
+        hsv_img[..., 2] = np.where(data > 0, 255, 0) # Тільки точки поза множиною яскраві
+        
+        image = Image.fromarray(hsv_img, mode='HSV').convert('RGB')
+        self.photo = ImageTk.PhotoImage(image)
+        self.ui.canvas.create_image(0, 0, anchor=tk.NW, image=self.photo)
+
+    def zoom_in(self, event): self._zoom(event, 0.4)
+    def zoom_out(self, event): self._zoom(event, 2.5)
+        
+    def _zoom(self, event, factor):
+        width, height = 800, 600
+        # Обчислюємо куди саме натиснув користувач у координатах фракталу
+        view_w = self.x_bounds[1] - self.x_bounds[0]
+        view_h = self.y_bounds[1] - self.y_bounds[0]
+        
+        mouse_x = self.x_bounds[0] + (event.x / width) * view_w
+        mouse_y = self.y_bounds[0] + (event.y / height) * view_h
+        
+        # Нові межі з новим масштабом
+        new_w, new_h = view_w * factor, view_h * factor
+        self.x_bounds = [mouse_x - new_w/2, mouse_x + new_w/2]
+        self.y_bounds = [mouse_y - new_h/2, mouse_y + new_h/2]
+        self.render()
+
+if __name__ == "__main__":
+    app = FractalController()
+    app.ui.mainloop()
