@@ -1,5 +1,5 @@
 # FractalVisionPro
-A system for generating fractal images in Python using NumPy, Pillow and Tkinter
+Система для генерації та візуалізації фрактальних малюнків на мові програмування Python, з використанням бібліотек NumPy, Pillow і Tkinter
 FractalVisionPro
 FractalVisionPro — це система для генерації фрактальних малюнків, що базується на асинхронній архітектурі та векторизованих математичних операціях.
 Функціональні можливості
